@@ -1,18 +1,14 @@
 import { jsPDF } from 'jspdf'
 import "./font/OpenSans-normal"
 
-const binaryToDataURL = (imageData: Buffer) => {
-    return 'data:image/jpeg;base64,' + imageData.toString('base64')
-}
-
-const generatePDF = (firstName: string, lastName: string, imageData: Buffer) => {
-    const image = binaryToDataURL(imageData)
+const generatePDF = (firstName: string, lastName: string, image: Buffer) => {
     const doc = new jsPDF()
 
     doc.setFont('OpenSans', 'normal')
     const displayName = firstName + ' ' + lastName
     doc.text(displayName, 20, 30)
-
+    // according to jsPDF documentation, second parameter is used only 
+    // if automatic type recognition fails, so it is safe to use PNG or WEBP
     doc.addImage(image, 'JPEG', 20, 40, 50, 50)
 
     return doc.output('arraybuffer')
