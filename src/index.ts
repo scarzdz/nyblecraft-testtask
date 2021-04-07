@@ -1,11 +1,20 @@
 import express from 'express'
-import UserRouter from './user'
+import { db } from './connection'
 
 const main = () => {
     const app = express()
     app.use(express.json())
 
-    app.use('/user', UserRouter)
+    // simple query
+    db.query(
+        'SELECT * FROM `user`',
+        function (err, results) {
+            if (err) {
+                throw err
+            }
+            console.log(results);
+        }
+    );
 
     app.listen(4000, () => {
         console.log('server started on localhost:4000')
