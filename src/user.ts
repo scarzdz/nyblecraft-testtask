@@ -1,6 +1,7 @@
 import express from 'express'
 import { RowDataPacket } from 'mysql2/typings/mysql'
 import { db } from "./connection"
+import generatePDF from './pdfGenerator'
 
 const router = express.Router()
 
@@ -15,10 +16,26 @@ router.post('/generate_pdf', (req, res) => {
             throw err
         }
 
-        console.log(data)
-        res.json({
-            result: true
-        })
+        if (data.length === 0) {
+            res.json({
+                result: false
+            })
+        } else {
+            const pdf = generatePDF(data[0].firstName, data[0].lastName, data[0].image)
+            const pdfBuff = Buffer.from(pdf)
+
+            db.query("UPDATE `user` SET `pdf` = ? WHERE id = ?", [pdfBuff, data[0].id], (err) => {
+                if (err) {
+                    throw err
+                }
+            })
+
+            res.json({
+                result: true,
+                pdfBuff
+            })
+
+        }
     })
 })
 
