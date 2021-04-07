@@ -11,31 +11,36 @@ router.post('/generate_pdf', (req, res) => {
 
     let sql = "SELECT * FROM `user` WHERE `firstName` = ?"
 
-    db.query(sql, [firstName], function (err, data: RowDataPacket[]) {
+    db.getConnection(function (err, conn) {
         if (err) {
             throw err
         }
+        conn.query(sql, [firstName], function (err, data: RowDataPacket[]) {
+            if (err) {
+                throw err
+            }
 
-        if (data.length === 0) {
-            res.json({
-                result: false
-            })
-        } else {
-            const pdf = generatePDF(data[0].firstName, data[0].lastName, data[0].image)
-            const pdfBuff = Buffer.from(pdf)
+            if (data.length === 0) {
+                res.json({
+                    result: false
+                })
+            } else {
+                const pdf = generatePDF(data[0].firstName, data[0].lastName, data[0].image)
+                const pdfBuff = Buffer.from(pdf)
 
-            db.query("UPDATE `user` SET `pdf` = ? WHERE id = ?", [pdfBuff, data[0].id], (err) => {
-                if (err) {
-                    throw err
-                }
-            })
+                conn.query("UPDATE `user` SET `pdf` = ? WHERE id = ?", [pdfBuff, data[0].id], (err) => {
+                    conn.release()
+                    if (err) {
+                        throw err
+                    }
+                })
 
-            res.json({
-                result: true,
-                pdfBuff
-            })
-
-        }
+                res.json({
+                    result: true,
+                    pdfBuff
+                })
+            }
+        })
     })
 })
 

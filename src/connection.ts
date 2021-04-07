@@ -1,6 +1,9 @@
 import mysql from 'mysql2'
 import mysqlconfig from './mysqlconfig'
 
+const pool = mysql.createPool(mysqlconfig);
+
+
 let connection = mysql.createConnection(mysqlconfig)
 
 connection.connect(function (err) {
@@ -11,4 +14,4 @@ connection.connect(function (err) {
     console.log('Connected to the MySQL server.')
 })
 
-export const db = connection
+export const db = pool
