@@ -1,11 +1,5 @@
 import { jsPDF } from 'jspdf'
-import font from './font/OpenSans-normal'
-
-const callAddFont = function (this: any) {
-    this.addFileToVFS('OpenSans-normal.ttf', font)
-    this.addFont('OpenSans-normal.ttf', 'OpenSans', 'normal')
-}
-jsPDF.API.events.push(['addFonts', callAddFont])
+import "./font/OpenSans-normal"
 
 const binaryToDataURL = (imageData: Buffer) => {
     return 'data:image/jpeg;base64,' + imageData.toString('base64')
